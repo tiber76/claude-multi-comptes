@@ -33,9 +33,9 @@
 - Xcode Command Line Tools pour construire l’application.
 - Claude Code est facultatif ; le suivi et la mise à jour de Claude Code ne sont actifs que si une installation est détectée.
 
-## Version Windows (aperçu)
+## Version Windows (préversion publique)
 
-Une première version Windows en .NET/WPF est disponible dans [`windows/`](windows/). Elle reprend la gestion des comptes, la création de sessions isolées, l’association d’un dossier de données existant et le suivi de Claude Code. La version macOS et son installation DMG restent indépendantes.
+Une première préversion Windows en .NET/WPF est disponible dans [`windows/`](windows/). L’archive x64 autonome se télécharge depuis la [release Windows et Linux 0.1.0-preview](https://github.com/tiber76/claude-multi-comptes/releases/tag/v0.1.0-preview). Elle reprend la gestion des comptes, la création de sessions isolées, l’association d’un dossier de données existant et le suivi de Claude Code. La version macOS et son installation DMG restent indépendantes.
 
 Voir la [note de version Windows 0.1.0-preview](docs/windows/RELEASE_NOTES_0.1.0-preview.md) et le [guide de test sur Windows ou dans une VM](docs/windows/TEST_GUIDE.md).
 
@@ -47,13 +47,13 @@ dotnet publish .\windows\ClaudeMultiComptes.Windows.csproj -c Release -r win-x64
 
 L’exécutable sera `windows\publish\win-x64\Claude Multi Comptes.exe`. Les comptes et leurs données sont enregistrés sous `%APPDATA%\Claude Multi Comptes`; remplacer l’application ne supprime pas ces données.
 
-Cette version est un aperçu : le lancement avec données isolées et la découverte des installations MSIX doivent encore être validés sur un vrai PC Windows avant une release publique. Claude Desktop ne documente pas officiellement l’usage multi-profils.
+Cette préversion n’a pas encore été exécutée sur un vrai PC Windows. Le lancement avec données isolées et la découverte des installations MSIX restent à valider avant une release stable. Claude Desktop ne documente pas officiellement l’usage multi-profils.
 
-## Version Linux (aperçu)
+## Version Linux (préversion publique)
 
-Une version Linux en .NET/Avalonia est disponible dans [`linux/`](linux/), ciblée sur Ubuntu 22.04+ et Debian 12+ en x64 et ARM64, les plateformes actuellement indiquées pour Claude Desktop Linux en bêta. Voir la [note de version Linux 0.1.0-preview](docs/linux/RELEASE_NOTES_0.1.0-preview.md), le [guide Linux](linux/README.md) et le [guide de test](docs/linux/TEST_GUIDE.md).
+Une première préversion Linux en .NET/Avalonia est disponible dans [`linux/`](linux/), pour Ubuntu 22.04+ et Debian 12+ en x64 et ARM64, les plateformes actuellement indiquées pour Claude Desktop Linux en bêta. Les archives autonomes sont téléchargeables depuis la [release Windows et Linux 0.1.0-preview](https://github.com/tiber76/claude-multi-comptes/releases/tag/v0.1.0-preview). Voir la [note de version Linux 0.1.0-preview](docs/linux/RELEASE_NOTES_0.1.0-preview.md), le [guide Linux](linux/README.md) et le [guide de test](docs/linux/TEST_GUIDE.md).
 
-Pour compiler les archives autonomes x64 et ARM64, installe le SDK .NET 8 puis exécute `bash linux/package-preview.sh`. Les archives sont créées dans `build/`. Les mises à jour de Claude Desktop restent gérées par APT. La compilation a été faite depuis macOS ; l’usage multi-profils doit encore être validé sur une vraie machine Linux avant toute release publique.
+Pour compiler les archives autonomes x64 et ARM64, installe le SDK .NET 8 puis exécute `bash linux/package-preview.sh`. Les archives sont créées dans `build/`. Les mises à jour de Claude Desktop restent gérées par APT. La préversion a été compilée depuis macOS, mais n’a pas encore été exécutée sur une vraie machine Linux ; l’usage multi-profils reste à valider avant une release stable.
 
 ## Construire et ouvrir
 
@@ -142,4 +142,4 @@ Le message de la commande est affiché dans l’application. Certaines installat
 
 ## Périmètre
 
-La version macOS est publiée sous forme de DMG. Les versions Windows et Linux sont fournies pour compilation et validation ; elles ne sont pas encore distribuées sous forme d’installateur.
+La version macOS stable est publiée sous forme de DMG. Des préversions publiques Windows (archive ZIP autonome x64) et Linux (archives portables x64 et ARM64) sont disponibles dans la [release 0.1.0-preview](https://github.com/tiber76/claude-multi-comptes/releases/tag/v0.1.0-preview). Elles sont destinées aux essais et restent à valider sur leurs systèmes respectifs ; aucun installateur Windows ou paquet Linux n’est fourni pour le moment.
