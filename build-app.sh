@@ -7,6 +7,7 @@ CONTENTS="$APP/Contents"
 mkdir -p "$CONTENTS/MacOS" "$CONTENTS/Resources"
 mkdir -p "$ROOT/build/ModuleCache"
 cp "$ROOT/Info.plist" "$CONTENTS/Info.plist"
+cp "$ROOT/Assets/AppIcon.icns" "$CONTENTS/Resources/AppIcon.icns"
 swiftc -parse-as-library -O -module-cache-path "$ROOT/build/ModuleCache" -framework SwiftUI -framework AppKit \
   "$ROOT/Sources/ClaudeComptesApp.swift" \
   -o "$CONTENTS/MacOS/ClaudeMultiComptes"
