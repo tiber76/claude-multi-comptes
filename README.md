@@ -39,6 +39,12 @@ open "build/Claude Multi Comptes.app"
 
 Le bundle est construit dans `build/Claude Multi Comptes.app` et signé localement avec une signature ad hoc. Il n’est pas notarié. Pour une distribution publique à d’autres utilisateurs, il faudra prévoir une signature Developer ID et la notarisation Apple.
 
+## Installer depuis une release
+
+Télécharge le fichier DMG depuis la [dernière release](https://github.com/tiber76/claude-multi-comptes/releases/latest), ouvre-le puis glisse **Claude Multi Comptes** dans **Applications**. L’application demande macOS 14 ou ultérieur.
+
+Le DMG actuel n’est pas notarié par Apple. macOS peut demander une autorisation manuelle au premier lancement. Une distribution sans cet avertissement nécessite une signature Developer ID et une notarisation Apple.
+
 ## Première utilisation
 
 1. Ouvre **Claude Multi Comptes** et clique sur **Ajouter un compte**.
