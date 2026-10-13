@@ -1,0 +1,11 @@
+Claude Multi Comptes pour Linux — version 0.1.0-preview
+
+Systèmes visés : Ubuntu 22.04+ ou Debian 12+, x64 ou ARM64.
+Claude Desktop doit être installé depuis le dépôt APT officiel Anthropic.
+
+Extrais cette archive et lance « Claude Multi Comptes » depuis un terminal.
+Les comptes et sessions sont conservés sous ~/.config/Claude Multi Comptes.
+Ne supprime pas ce dossier lors du remplacement de l’application.
+
+Cette version a été compilée depuis macOS. Le lancement multi-profils et
+l’accès aux dossiers de Claude doivent encore être validés sous Linux.

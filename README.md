@@ -10,7 +10,7 @@
 
 *Aperçu de l’application. Cette capture date d’une version antérieure : le texte « trois sessions à la fois » et le compteur visible ne reflètent plus la version actuelle, qui n’impose aucune limite au nombre de sessions ouvertes.*
 
-<p align="center"><strong>macOS 14 ou ultérieur · version Windows en aperçu</strong></p>
+<p align="center"><strong>macOS · versions Windows et Linux en aperçu</strong></p>
 
 ---
 
@@ -48,6 +48,12 @@ dotnet publish .\windows\ClaudeMultiComptes.Windows.csproj -c Release -r win-x64
 L’exécutable sera `windows\publish\win-x64\Claude Multi Comptes.exe`. Les comptes et leurs données sont enregistrés sous `%APPDATA%\Claude Multi Comptes`; remplacer l’application ne supprime pas ces données.
 
 Cette version est un aperçu : le lancement avec données isolées et la découverte des installations MSIX doivent encore être validés sur un vrai PC Windows avant une release publique. Claude Desktop ne documente pas officiellement l’usage multi-profils.
+
+## Version Linux (aperçu)
+
+Une version Linux en .NET/Avalonia est disponible dans [`linux/`](linux/), ciblée sur Ubuntu 22.04+ et Debian 12+ en x64 et ARM64, les plateformes actuellement indiquées pour Claude Desktop Linux en bêta. Voir la [note de version Linux 0.1.0-preview](docs/linux/RELEASE_NOTES_0.1.0-preview.md), le [guide Linux](linux/README.md) et le [guide de test](docs/linux/TEST_GUIDE.md).
+
+Pour compiler les archives autonomes x64 et ARM64, installe le SDK .NET 8 puis exécute `bash linux/package-preview.sh`. Les archives sont créées dans `build/`. Les mises à jour de Claude Desktop restent gérées par APT. La compilation a été faite depuis macOS ; l’usage multi-profils doit encore être validé sur une vraie machine Linux avant toute release publique.
 
 ## Construire et ouvrir
 
@@ -136,4 +142,4 @@ Le message de la commande est affiché dans l’application. Certaines installat
 
 ## Périmètre
 
-La version macOS est publiée sous forme de DMG. La version Windows est fournie pour compilation et validation ; elle n’est pas encore distribuée sous forme d’installateur.
+La version macOS est publiée sous forme de DMG. Les versions Windows et Linux sont fournies pour compilation et validation ; elles ne sont pas encore distribuées sous forme d’installateur.
