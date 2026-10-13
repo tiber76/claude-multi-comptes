@@ -47,7 +47,9 @@ Le bundle est construit dans `build/Claude Multi Comptes.app` et signé localeme
 
 ## Installer depuis une release
 
-Télécharge le fichier DMG depuis la [dernière release](https://github.com/tiber76/claude-multi-comptes/releases/latest), ouvre-le puis glisse **Claude Multi Comptes** dans **Applications**. L’application demande macOS 14 ou ultérieur.
+Télécharge le fichier DMG depuis la [dernière release](https://github.com/tiber76/claude-multi-comptes/releases/latest), ouvre-le puis glisse **Claude Multi Comptes** dans **Applications**. Lors d’une mise à jour, confirme le remplacement de l’app existante. L’application demande macOS 14 ou ultérieur.
+
+La mise à jour remplace uniquement **Claude Multi Comptes.app**. Elle ne réinitialise ni la liste des profils, ni les données de leurs instances Claude. Tu peux quitter Claude Multi Comptes pendant l’installation ; les fenêtres Claude déjà ouvertes peuvent rester ouvertes. Ne supprime pas le dossier `~/Library/Application Support/Claude Multi Comptes` : il contient la liste des profils, leurs sessions, leur historique et leurs réglages.
 
 Le DMG actuel n’est pas notarié par Apple. Si Gatekeeper bloque l’ouverture, et seulement si tu as téléchargé l’application depuis la release officielle du projet :
 
@@ -78,7 +80,7 @@ Les profils et leurs données sont conservés sur ce Mac :
 └── Profiles/<identifiant-du-profil>/
 ```
 
-Chaque dossier de profil contient les données Claude de cette instance, notamment la session et les réglages. Le fichier `profiles.json` contient les noms, couleurs et identifiants des fiches. Retirer une fiche de l’interface ne supprime pas son dossier ni ses données. Pour supprimer définitivement un profil, ferme d’abord sa fenêtre puis supprime son dossier dans `Profiles`.
+Chaque dossier de profil contient les données Claude de cette instance, notamment la session et les réglages. Le fichier `profiles.json` contient les noms, couleurs et identifiants des fiches. Cet emplacement est indépendant de l’application installée dans `/Applications` : remplacer ou réinstaller l’app ne supprime donc pas les profils. Au redémarrage, l’application recharge la liste depuis ce fichier et détecte les fenêtres Claude toujours ouvertes. Retirer une fiche de l’interface ne supprime pas son dossier ni ses données. Pour supprimer définitivement un profil, ferme d’abord sa fenêtre puis supprime son dossier dans `Profiles`.
 
 L’application ne lit, ne copie ni ne stocke de mots de passe ou de jetons de connexion. Les vérifications de version de Claude Code contactent l’API publique des releases GitHub du dépôt officiel Anthropic ; aucun compte Anthropic n’est utilisé pour cette vérification.
 
