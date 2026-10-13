@@ -4,7 +4,7 @@
 
 <h1 align="center">Claude Multi Comptes</h1>
 
-<p align="center">Un profil Claude Desktop par compte, jusqu’à trois ouverts en même temps.</p>
+<p align="center">Un profil Claude Desktop par compte, autant de sessions ouvertes que nécessaire.</p>
 
 <p align="center"><strong>Application native macOS · macOS 14 ou ultérieur</strong></p>
 
@@ -16,7 +16,7 @@
 
 - Créer, renommer et retirer des profils Claude.
 - Garder une session, un historique, des réglages et des connecteurs séparés par profil.
-- Ouvrir jusqu’à trois instances simultanément et voir lesquelles sont ouvertes.
+- Ouvrir plusieurs instances simultanément et voir lesquelles sont ouvertes ; l’application n’impose pas de limite.
 - Consulter la version installée et la dernière version publique de **Claude Code**, puis savoir si une mise à jour est disponible.
 - Lancer `claude update` pour mettre à jour Claude Code.
 - Ouvrir le téléchargement officiel de Claude Desktop pour une réinstallation manuelle. En usage normal, Claude Desktop gère ses mises à jour automatiquement.
@@ -58,7 +58,7 @@ Le bouton **Ouvrir quand même** apparaît après une tentative de lancement et 
 2. Donne un nom explicite au profil, par exemple « Personnel », « Travail » ou le nom d’un client.
 3. Clique sur **Ouvrir**. Lors du premier lancement, connecte-toi au compte voulu dans cette fenêtre Claude.
 4. Crée les autres profils et connecte chacun au compte associé.
-5. Garde jusqu’à trois fenêtres ouvertes à la fois. Ferme une fenêtre Claude pour libérer une place.
+5. Garde ouvertes autant de fenêtres que nécessaire. Ferme une fenêtre Claude pour libérer les ressources utilisées.
 
 Les comptes ne sont pas détectés automatiquement : une fiche correspond à un profil séparé que tu crées et connectes toi-même.
 
@@ -87,7 +87,7 @@ Les installations de Claude Code sont recherchées dans `~/.local/bin/claude`, `
 
 ## Fonctionnement technique
 
-Claude Multi Comptes est une application SwiftUI. Elle lance Claude Desktop avec un dossier de données distinct via l’argument Electron `--user-data-dir`. Les trois places simultanées sont une limite appliquée par cette interface.
+Claude Multi Comptes est une application SwiftUI. Elle lance Claude Desktop avec un dossier de données distinct via l’argument Electron `--user-data-dir`. L’application n’impose pas de limite au nombre de profils ouverts simultanément ; la mémoire disponible et Claude Desktop lui-même restent les limites pratiques.
 
 Claude Desktop ne documente pas officiellement cet usage multi-profils. Une mise à jour de Claude peut modifier son comportement. Le retour de connexion depuis le navigateur dépend aussi du routage `claude://` configuré par macOS ; vérifie le compte affiché lors de la première connexion de chaque profil.
 

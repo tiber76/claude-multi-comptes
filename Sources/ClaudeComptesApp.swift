@@ -62,7 +62,6 @@ final class ProfileStore: ObservableObject {
     }
 
     var activeCount: Int { runningProfileIDs.count }
-    var canLaunchMore: Bool { activeCount < 3 }
     var claudeIsInstalled: Bool { FileManager.default.isExecutableFile(atPath: claudeExecutable.path) }
     var claudeCodeExecutable: URL? {
         let home = FileManager.default.homeDirectoryForCurrentUser
@@ -251,11 +250,6 @@ final class ProfileStore: ObservableObject {
             alertMessage = "Ce compte est déjà ouvert. Ferme sa fenêtre Claude avant de le relancer."
             return
         }
-        guard canLaunchMore else {
-            alertMessage = "Tu peux ouvrir jusqu’à trois comptes en même temps. Ferme une fenêtre Claude pour en lancer une autre."
-            return
-        }
-
         do {
             try FileManager.default.createDirectory(at: profile.dataDirectory, withIntermediateDirectories: true)
             let process = Process()
@@ -397,7 +391,7 @@ struct ContentView: View {
         HStack(alignment: .center, spacing: 20) {
             VStack(alignment: .leading, spacing: 11) {
                 Text("Tous tes comptes Claude.").font(.system(size: 25, weight: .semibold, design: .rounded))
-                Text("Crée un espace par compte, connecte-toi une fois, puis ouvre jusqu’à trois sessions à la fois.")
+                Text("Crée un espace par compte, connecte-toi une fois, puis lance les sessions dont tu as besoin.")
                     .font(.system(size: 13)).foregroundStyle(.secondary).fixedSize(horizontal: false, vertical: true)
                     .frame(maxWidth: 440, alignment: .leading)
                 HStack(spacing: 7) {
@@ -426,7 +420,7 @@ struct ContentView: View {
             HStack(alignment: .firstTextBaseline) {
                 Text("MES COMPTES").font(.system(size: 10, weight: .bold)).tracking(1.1).foregroundStyle(.secondary)
                 Spacer()
-                Text("\(store.activeCount) / 3 ouverts").font(.system(size: 11, weight: .medium, design: .monospaced)).foregroundStyle(.secondary)
+                Text("\(store.activeCount) ouverts").font(.system(size: 11, weight: .medium, design: .monospaced)).foregroundStyle(.secondary)
             }
             if store.profiles.isEmpty {
                 emptyState
@@ -596,7 +590,7 @@ struct ContentView: View {
                     .font(.system(size: 11, weight: .semibold)).frame(minWidth: 76)
             }
             .buttonStyle(.bordered)
-            .disabled(isRunning || !store.canLaunchMore || !store.claudeIsInstalled)
+            .disabled(isRunning || !store.claudeIsInstalled)
         }
         .padding(.horizontal, 15).padding(.vertical, 12)
         .background(Color(nsColor: .controlBackgroundColor), in: RoundedRectangle(cornerRadius: 14))
