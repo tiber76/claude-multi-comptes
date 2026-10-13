@@ -10,7 +10,7 @@
 
 *Aperçu de l’application. Cette capture date d’une version antérieure : le texte « trois sessions à la fois » et le compteur visible ne reflètent plus la version actuelle, qui n’impose aucune limite au nombre de sessions ouvertes.*
 
-<p align="center"><strong>Application native macOS · macOS 14 ou ultérieur</strong></p>
+<p align="center"><strong>macOS 14 ou ultérieur · version Windows en aperçu</strong></p>
 
 ---
 
@@ -32,6 +32,20 @@
 - Claude Desktop installé dans `/Applications/Claude.app`.
 - Xcode Command Line Tools pour construire l’application.
 - Claude Code est facultatif ; le suivi et la mise à jour de Claude Code ne sont actifs que si une installation est détectée.
+
+## Version Windows (aperçu)
+
+Une première version Windows en .NET/WPF est disponible dans [`windows/`](windows/). Elle reprend la gestion des comptes, la création de sessions isolées, l’association d’un dossier de données existant et le suivi de Claude Code. La version macOS et son installation DMG restent indépendantes.
+
+Elle demande Windows 10 ou ultérieur, le SDK .NET 8, et Claude Desktop installé depuis la [page officielle](https://support.anthropic.com/fr/articles/10065433-installation-de-claude-pour-ordinateur-de-bureau). Pour construire et publier une application autonome x64 depuis Windows :
+
+```powershell
+dotnet publish .\windows\ClaudeMultiComptes.Windows.csproj -c Release -r win-x64 --self-contained true -o .\windows\publish\win-x64
+```
+
+L’exécutable sera `windows\publish\win-x64\Claude Multi Comptes.exe`. Les comptes et leurs données sont enregistrés sous `%APPDATA%\Claude Multi Comptes`; remplacer l’application ne supprime pas ces données.
+
+Cette version est un aperçu : le lancement avec données isolées et la découverte des installations MSIX doivent encore être validés sur un vrai PC Windows avant une release publique. Claude Desktop ne documente pas officiellement l’usage multi-profils.
 
 ## Construire et ouvrir
 
@@ -120,4 +134,4 @@ Le message de la commande est affiché dans l’application. Certaines installat
 
 ## Périmètre
 
-La version actuelle cible macOS. Une version Windows pourra être étudiée séparément ; elle n’est pas incluse dans ce dépôt pour le moment.
+La version macOS est publiée sous forme de DMG. La version Windows est fournie pour compilation et validation ; elle n’est pas encore distribuée sous forme d’installateur.

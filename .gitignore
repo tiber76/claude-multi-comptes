@@ -3,3 +3,6 @@
 .swiftpm/
 *.xcuserstate
 /build/
+windows/bin/
+windows/obj/
+windows/publish/
