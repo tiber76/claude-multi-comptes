@@ -37,6 +37,8 @@
 
 Une première version Windows en .NET/WPF est disponible dans [`windows/`](windows/). Elle reprend la gestion des comptes, la création de sessions isolées, l’association d’un dossier de données existant et le suivi de Claude Code. La version macOS et son installation DMG restent indépendantes.
 
+Voir la [note de version Windows 0.1.0-preview](docs/windows/RELEASE_NOTES_0.1.0-preview.md) et le [guide de test sur Windows ou dans une VM](docs/windows/TEST_GUIDE.md).
+
 Elle demande Windows 10 ou ultérieur, le SDK .NET 8, et Claude Desktop installé depuis la [page officielle](https://support.anthropic.com/fr/articles/10065433-installation-de-claude-pour-ordinateur-de-bureau). Pour construire et publier une application autonome x64 depuis Windows :
 
 ```powershell

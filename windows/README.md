@@ -2,6 +2,8 @@
 
 Cette première version reprend les fonctions principales de l’app macOS : profils nommés, sessions Claude séparées, association à un dossier de données existant, état des sessions ouvertes et suivi de Claude Code.
 
+Lire la [note de version 0.1.0-preview](../docs/windows/RELEASE_NOTES_0.1.0-preview.md) et le [guide de test Windows](../docs/windows/TEST_GUIDE.md) avant d’essayer cette version.
+
 ## Prérequis
 
 - Windows 10 ou ultérieur.
