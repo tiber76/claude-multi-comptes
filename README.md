@@ -21,6 +21,7 @@
 ## Fonctionnalités
 
 - Créer, renommer et retirer des profils Claude.
+- Associer un profil à un dossier Claude existant pour reprendre sa session, son historique et ses réglages.
 - Garder une session, un historique, des réglages et des connecteurs séparés par profil.
 - Ouvrir plusieurs instances simultanément et voir lesquelles sont ouvertes ; l’application n’impose pas de limite.
 - Consulter la version installée et la dernière version publique de **Claude Code**, puis savoir si une mise à jour est disponible.
@@ -80,7 +81,9 @@ Les profils et leurs données sont conservés sur ce Mac :
 └── Profiles/<identifiant-du-profil>/
 ```
 
-Chaque dossier de profil contient les données Claude de cette instance, notamment la session et les réglages. Le fichier `profiles.json` contient les noms, couleurs et identifiants des fiches. Cet emplacement est indépendant de l’application installée dans `/Applications` : remplacer ou réinstaller l’app ne supprime donc pas les profils. Au redémarrage, l’application recharge la liste depuis ce fichier et détecte les fenêtres Claude toujours ouvertes. Retirer une fiche de l’interface ne supprime pas son dossier ni ses données. Pour supprimer définitivement un profil, ferme d’abord sa fenêtre puis supprime son dossier dans `Profiles`.
+Chaque dossier de profil contient les données Claude de cette instance, notamment la session et les réglages. Le fichier `profiles.json` contient les noms, couleurs, identifiants et éventuelles associations vers un dossier existant. Cet emplacement est indépendant de l’application installée dans `/Applications` : remplacer ou réinstaller l’app ne supprime donc pas les profils. Au redémarrage, l’application recharge la liste depuis ce fichier et détecte les fenêtres Claude toujours ouvertes.
+
+Dans le menu d’un compte, **Associer un profil existant…** affiche les dossiers Claude détectés sur ce Mac, dont le profil classique et les autres dossiers `Claude-*`. Choisis le dossier qui contient la session du compte concerné. L’association réutilise les données sur place, sans les copier ni les fusionner ; les données précédentes de la fiche restent conservées si tu la détaches. Un même dossier ne peut être associé qu’à une fiche à la fois. Retirer une fiche de l’interface ne supprime aucun dossier Claude.
 
 L’application ne lit, ne copie ni ne stocke de mots de passe ou de jetons de connexion. Les vérifications de version de Claude Code contactent l’API publique des releases GitHub du dépôt officiel Anthropic ; aucun compte Anthropic n’est utilisé pour cette vérification.
 

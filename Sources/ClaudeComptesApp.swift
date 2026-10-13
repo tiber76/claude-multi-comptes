@@ -24,14 +24,37 @@ struct ClaudeProfile: Codable, Identifiable, Equatable {
     var name: String
     var color: String
     var createdAt: Date
+    var linkedDataDirectoryPath: String? = nil
+
+    var isLinkedToExistingData: Bool { linkedDataDirectoryPath != nil }
+    var usesClassicClaudeData: Bool {
+        guard let linkedDataDirectoryPath else { return false }
+        return URL(fileURLWithPath: linkedDataDirectoryPath).standardizedFileURL == Self.classicDataDirectory.standardizedFileURL
+    }
 
     var dataDirectory: URL {
-        FileManager.default.homeDirectoryForCurrentUser
+        if let linkedDataDirectoryPath {
+            return URL(fileURLWithPath: linkedDataDirectoryPath, isDirectory: true)
+        }
+        return FileManager.default.homeDirectoryForCurrentUser
             .appendingPathComponent("Library/Application Support/Claude Multi Comptes/Profiles", isDirectory: true)
             .appendingPathComponent(id.uuidString, isDirectory: true)
     }
 
+    static var classicDataDirectory: URL {
+        FileManager.default.homeDirectoryForCurrentUser
+            .appendingPathComponent("Library/Application Support/Claude", isDirectory: true)
+    }
+
     static let colors = ["#D97757", "#527A69", "#5574A6", "#9470A8", "#C18443", "#68737D"]
+}
+
+struct ExistingClaudeDataDirectory: Identifiable, Equatable {
+    let url: URL
+    let title: String
+
+    var id: String { url.standardizedFileURL.path }
+    var detail: String { url.path }
 }
 
 @MainActor
@@ -62,6 +85,50 @@ final class ProfileStore: ObservableObject {
     }
 
     var activeCount: Int { runningProfileIDs.count }
+    var existingClaudeDataDirectories: [ExistingClaudeDataDirectory] {
+        let root = FileManager.default.homeDirectoryForCurrentUser
+            .appendingPathComponent("Library/Application Support", isDirectory: true)
+        var candidates: [URL] = [ClaudeProfile.classicDataDirectory]
+        if let contents = try? FileManager.default.contentsOfDirectory(
+            at: root,
+            includingPropertiesForKeys: [.isDirectoryKey],
+            options: [.skipsHiddenFiles]
+        ) {
+            candidates += contents.filter { $0.lastPathComponent.hasPrefix("Claude-") }
+        }
+        if let contents = try? FileManager.default.contentsOfDirectory(
+            at: Self.profilesDirectory,
+            includingPropertiesForKeys: [.isDirectoryKey],
+            options: [.skipsHiddenFiles]
+        ) {
+            candidates += contents
+        }
+
+        let linkedPaths = Set(profiles.compactMap { $0.linkedDataDirectoryPath.map { URL(fileURLWithPath: $0).standardizedFileURL.path } })
+        return candidates
+            .filter { url in
+                var isDirectory: ObjCBool = false
+                guard FileManager.default.fileExists(atPath: url.path, isDirectory: &isDirectory), isDirectory.boolValue else { return false }
+                let path = url.standardizedFileURL.path
+                guard !linkedPaths.contains(path) else { return true }
+                return ["Local State", "Preferences", "Local Storage", "IndexedDB", "Partitions"]
+                    .contains { FileManager.default.fileExists(atPath: url.appendingPathComponent($0).path) }
+            }
+            .reduce(into: [ExistingClaudeDataDirectory]()) { result, url in
+                let path = url.standardizedFileURL.path
+                guard !result.contains(where: { $0.id == path }) else { return }
+                let title: String
+                if path == ClaudeProfile.classicDataDirectory.standardizedFileURL.path {
+                    title = "Claude classique"
+                } else if path.hasPrefix(Self.profilesDirectory.standardizedFileURL.path + "/") {
+                    let id = url.lastPathComponent
+                    title = profiles.first(where: { $0.id.uuidString == id })?.name ?? "Profil Claude existant"
+                } else {
+                    title = url.lastPathComponent.replacingOccurrences(of: "Claude-", with: "Claude · ")
+                }
+                result.append(ExistingClaudeDataDirectory(url: url, title: title))
+            }
+    }
     var claudeIsInstalled: Bool { FileManager.default.isExecutableFile(atPath: claudeExecutable.path) }
     var claudeCodeExecutable: URL? {
         let home = FileManager.default.homeDirectoryForCurrentUser
@@ -240,6 +307,48 @@ final class ProfileStore: ObservableObject {
         // Keep the account data directory so removing a card cannot erase a login or conversations.
     }
 
+    func existingDataDirectories(for profile: ClaudeProfile) -> [ExistingClaudeDataDirectory] {
+        existingClaudeDataDirectories.filter { candidate in
+            !profiles.contains { other in
+                other.id != profile.id && other.linkedDataDirectoryPath.map {
+                    URL(fileURLWithPath: $0).standardizedFileURL.path == candidate.id
+                } == true
+            }
+        }
+    }
+
+    func attach(_ profile: ClaudeProfile, to directory: ExistingClaudeDataDirectory) {
+        guard FileManager.default.fileExists(atPath: directory.url.path) else {
+            alertMessage = "Ce dossier de données Claude n’existe plus. Actualise la liste et réessaie."
+            return
+        }
+        guard !runningProfileIDs.contains(profile.id) else {
+            alertMessage = "Ferme d’abord cette instance Claude avant de changer son profil de données."
+            return
+        }
+        guard !profiles.contains(where: { $0.id != profile.id && $0.linkedDataDirectoryPath.map {
+            URL(fileURLWithPath: $0).standardizedFileURL == directory.url.standardizedFileURL
+        } == true }) else {
+            alertMessage = "Ce profil de données est déjà associé à un autre compte."
+            return
+        }
+        guard let index = profiles.firstIndex(where: { $0.id == profile.id }) else { return }
+        profiles[index].linkedDataDirectoryPath = directory.url.standardizedFileURL.path
+        saveProfiles()
+        refreshRunningProfiles()
+    }
+
+    func detachFromExistingData(_ profile: ClaudeProfile) {
+        guard !runningProfileIDs.contains(profile.id),
+              let index = profiles.firstIndex(where: { $0.id == profile.id }) else {
+            alertMessage = "Ferme d’abord cette instance Claude avant de la détacher."
+            return
+        }
+        profiles[index].linkedDataDirectoryPath = nil
+        saveProfiles()
+        refreshRunningProfiles()
+    }
+
     func launch(_ profile: ClaudeProfile) {
         refreshRunningProfiles()
         guard claudeIsInstalled else {
@@ -251,10 +360,14 @@ final class ProfileStore: ObservableObject {
             return
         }
         do {
-            try FileManager.default.createDirectory(at: profile.dataDirectory, withIntermediateDirectories: true)
+            if !profile.isLinkedToExistingData {
+                try FileManager.default.createDirectory(at: profile.dataDirectory, withIntermediateDirectories: true)
+            }
             let process = Process()
             process.executableURL = claudeExecutable
-            process.arguments = ["--user-data-dir=\(profile.dataDirectory.path)"]
+            process.arguments = profile.usesClassicClaudeData
+                ? []
+                : ["--user-data-dir=\(profile.dataDirectory.path)"]
             try process.run()
             // Process exits when Claude's main process exits. Polling ps also detects launches
             // that remain open after this manager is quit and reopened.
@@ -278,7 +391,16 @@ final class ProfileStore: ObservableObject {
             let output = pipe.fileHandleForReading.readDataToEndOfFile()
             process.waitUntilExit()
             let commands = String(decoding: output, as: UTF8.self)
+            let commandLines = commands.components(separatedBy: .newlines)
+            let classicClaudeIsRunning = commandLines.contains { command in
+                command.contains(claudeExecutable.path)
+                    && !command.contains("--user-data-dir=")
+                    && !command.contains("--type=")
+            }
             let activeIDs = Set(profiles.compactMap { profile -> UUID? in
+                if profile.usesClassicClaudeData {
+                    return classicClaudeIsRunning ? profile.id : nil
+                }
                 let marker = "--user-data-dir=\(profile.dataDirectory.path)"
                 return commands.contains(marker) ? profile.id : nil
             })
@@ -317,6 +439,7 @@ struct ContentView: View {
     @State private var isAddingProfile = false
     @State private var profileToRename: ClaudeProfile?
     @State private var profileToRemove: ClaudeProfile?
+    @State private var profileToAttach: ClaudeProfile?
 
     var body: some View {
         ZStack {
@@ -347,6 +470,14 @@ struct ContentView: View {
         .sheet(isPresented: $isAddingProfile) { AddProfileSheet { name, color in store.addProfile(name: name, color: color) } }
         .sheet(item: $profileToRename) { profile in
             RenameProfileSheet(name: profile.name) { store.rename(profile, to: $0) }
+        }
+        .sheet(item: $profileToAttach) { profile in
+            ExistingClaudeDataSheet(
+                profile: profile,
+                directories: store.existingDataDirectories(for: profile)
+            ) { directory in
+                store.attach(profile, to: directory)
+            }
         }
         .confirmationDialog("Retirer ce compte de la liste ?", isPresented: Binding(
             get: { profileToRemove != nil },
@@ -572,12 +703,25 @@ struct ContentView: View {
                 Text(profile.name).font(.system(size: 13, weight: .semibold))
                 HStack(spacing: 6) {
                     Circle().fill(isRunning ? Color.green : Color.secondary.opacity(0.45)).frame(width: 6, height: 6)
-                    Text(isRunning ? "Ouvert" : "Prêt à ouvrir").font(.system(size: 11)).foregroundStyle(.secondary)
+                    Text(profile.isLinkedToExistingData
+                         ? "Profil existant · \(isRunning ? "Ouvert" : "Prêt à ouvrir")"
+                         : (isRunning ? "Ouvert" : "Prêt à ouvrir"))
+                        .font(.system(size: 11)).foregroundStyle(.secondary)
                 }
             }
             Spacer()
             Menu {
                 Button("Renommer…") { profileToRename = profile }
+                Button(profile.isLinkedToExistingData ? "Changer le profil de données…" : "Associer un profil existant…") {
+                    profileToAttach = profile
+                }
+                .disabled(isRunning || store.existingDataDirectories(for: profile).isEmpty)
+                if profile.isLinkedToExistingData {
+                    Button("Détacher le profil existant", role: .destructive) {
+                        store.detachFromExistingData(profile)
+                    }
+                    .disabled(isRunning)
+                }
                 Button("Retirer de la liste…", role: .destructive) { profileToRemove = profile }
                     .disabled(isRunning)
             } label: {
@@ -676,6 +820,69 @@ struct RenameProfileSheet: View {
     }
 
     private func save() { onSave(name); dismiss() }
+}
+
+struct ExistingClaudeDataSheet: View {
+    @Environment(\.dismiss) private var dismiss
+    let profile: ClaudeProfile
+    let directories: [ExistingClaudeDataDirectory]
+    let onSelect: (ExistingClaudeDataDirectory) -> Void
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 14) {
+            VStack(alignment: .leading, spacing: 5) {
+                Text("Associer « \(profile.name) » à un profil existant")
+                    .font(.system(size: 19, weight: .semibold, design: .rounded))
+                Text("Choisis le dossier qui contient la session Claude de ce compte.")
+                    .font(.system(size: 12)).foregroundStyle(.secondary)
+            }
+            if directories.isEmpty {
+                ContentUnavailableView("Aucun profil Claude trouvé", systemImage: "folder", description: Text("Ouvre d’abord le compte dans Claude ou crée un profil séparé."))
+                    .frame(maxWidth: .infinity, minHeight: 150)
+            } else {
+                ScrollView {
+                    VStack(spacing: 7) {
+                        ForEach(directories) { directory in
+                            Button {
+                                onSelect(directory)
+                                dismiss()
+                            } label: {
+                                HStack(spacing: 10) {
+                                    Image(systemName: "person.crop.circle")
+                                        .font(.system(size: 17)).foregroundStyle(Color(red: 0.78, green: 0.37, blue: 0.27))
+                                    VStack(alignment: .leading, spacing: 3) {
+                                        Text(directory.title).font(.system(size: 12, weight: .semibold))
+                                        Text(directory.detail).font(.system(size: 9, design: .monospaced))
+                                            .foregroundStyle(.secondary).lineLimit(1).truncationMode(.middle)
+                                    }
+                                    Spacer()
+                                    if profile.linkedDataDirectoryPath.map({ URL(fileURLWithPath: $0).standardizedFileURL.path }) == directory.id {
+                                        Image(systemName: "checkmark.circle.fill").foregroundStyle(.green)
+                                    } else {
+                                        Image(systemName: "arrow.right.circle").foregroundStyle(.tertiary)
+                                    }
+                                }
+                                .padding(.horizontal, 11).padding(.vertical, 9)
+                                .contentShape(RoundedRectangle(cornerRadius: 10))
+                            }
+                            .buttonStyle(.plain)
+                            .background(Color(nsColor: .controlBackgroundColor), in: RoundedRectangle(cornerRadius: 10))
+                        }
+                    }
+                }
+                .frame(minHeight: 130, maxHeight: 245)
+            }
+            Text("Les dossiers existants sont utilisés tels quels : rien n’est déplacé ni supprimé. Les données propres à ce profil restent conservées si tu le détaches plus tard.")
+                .font(.system(size: 10)).foregroundStyle(.secondary).fixedSize(horizontal: false, vertical: true)
+            HStack {
+                Spacer()
+                Button("Annuler", role: .cancel) { dismiss() }.keyboardShortcut(.cancelAction)
+            }
+        }
+        .padding(22)
+        .frame(width: 500)
+        .frame(minHeight: 300)
+    }
 }
 
 extension Color {
