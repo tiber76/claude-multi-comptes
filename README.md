@@ -43,7 +43,14 @@ Le bundle est construit dans `build/Claude Multi Comptes.app` et signé localeme
 
 Télécharge le fichier DMG depuis la [dernière release](https://github.com/tiber76/claude-multi-comptes/releases/latest), ouvre-le puis glisse **Claude Multi Comptes** dans **Applications**. L’application demande macOS 14 ou ultérieur.
 
-Le DMG actuel n’est pas notarié par Apple. macOS peut demander une autorisation manuelle au premier lancement. Une distribution sans cet avertissement nécessite une signature Developer ID et une notarisation Apple.
+Le DMG actuel n’est pas notarié par Apple. Si Gatekeeper bloque l’ouverture, et seulement si tu as téléchargé l’application depuis la release officielle du projet :
+
+1. Clique sur **Terminé** dans l’alerte, puis essaie une première fois d’ouvrir l’app depuis **Applications**.
+2. Ouvre ** > Réglages Système > Confidentialité et sécurité**, puis descends jusqu’à la section **Sécurité**.
+3. Clique sur **Ouvrir quand même** à côté de Claude Multi Comptes et confirme avec ton mot de passe ou Touch ID.
+4. Relance l’application depuis **Applications**.
+
+Le bouton **Ouvrir quand même** apparaît après une tentative de lancement et reste disponible environ une heure. [Voir la procédure Apple](https://support.apple.com/en-gb/guide/mac-help/mh40617/27/mac/27). Une distribution sans cet avertissement nécessite une signature Developer ID et une notarisation Apple.
 
 ## Première utilisation
 
