@@ -6,11 +6,9 @@
 
 <p align="center">Un profil Claude Desktop par compte, autant de sessions ouvertes que nécessaire.</p>
 
-<p align="center">
-  <img src="Screenshots/claude-multi-comptes.png" alt="Capture de Claude Multi Comptes avec les noms de comptes anonymisés" width="100%" />
-</p>
+![Capture de Claude Multi Comptes avec les noms de comptes anonymisés](Screenshots/claude-multi-comptes.png)
 
-<p align="center"><em>Aperçu de l’application. La capture montre l’ancien indicateur de sessions ouvertes ; l’application actuelle n’impose plus de limite.</em></p>
+*Aperçu de l’application. Cette capture date d’une version antérieure : le texte « trois sessions à la fois » et le compteur visible ne reflètent plus la version actuelle, qui n’impose aucune limite au nombre de sessions ouvertes.*
 
 <p align="center"><strong>Application native macOS · macOS 14 ou ultérieur</strong></p>
 
