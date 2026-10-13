@@ -1,6 +1,14 @@
-# Claude Multi Comptes
+<p align="center">
+  <img src="Assets/AppIcon.png" alt="Icône de Claude Multi Comptes" width="128" />
+</p>
 
-Gestionnaire macOS natif pour ouvrir plusieurs profils Claude Desktop, chacun avec sa propre session. Jusqu’à trois profils peuvent tourner en même temps.
+<h1 align="center">Claude Multi Comptes</h1>
+
+<p align="center">Un profil Claude Desktop par compte, jusqu’à trois ouverts en même temps.</p>
+
+<p align="center"><strong>Application native macOS · macOS 14 ou ultérieur</strong></p>
+
+---
 
 > Projet indépendant, non affilié à Anthropic. Claude Desktop ne propose pas actuellement de gestionnaire multi-profils officiel.
 
